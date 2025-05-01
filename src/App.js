@@ -27,7 +27,14 @@ export default function ChatApp() {
         if (data.members) {
           setMembers(data.members);
         } else {
-          setMessages((prev) => [...prev, data]);
+          const timestampedData = {
+            ...data,
+            timestamp: new Date().toLocaleTimeString([], {
+              hour: "2-digit",
+              minute: "2-digit",
+            }),
+          };
+          setMessages((prev) => [...prev, timestampedData]);
         }
       };
     }
@@ -143,17 +150,32 @@ export default function ChatApp() {
                   {msg.systemMessage && (
                     <div style={{ fontStyle: "italic", color: "#888" }}>
                       {msg.systemMessage}
+                      {msg.timestamp && (
+                        <span style={{ marginLeft: "8px", fontSize: "0.9em" }}>
+                          ({msg.timestamp})
+                        </span>
+                      )}
                     </div>
                   )}
                   {msg.publicMessage && (
                     <div>
                       <strong>{msg.publicMessage.split(":")[0]}</strong>:{" "}
                       {msg.publicMessage.split(":").slice(1).join(":").trim()}
+                      {msg.timestamp && (
+                        <span style={{ marginLeft: "8px", fontSize: "0.9em", color: "#888" }}>
+                          ({msg.timestamp})
+                        </span>
+                      )}
                     </div>
                   )}
                   {msg.from && msg.message && (
                     <div>
                       <strong>{msg.from}</strong>: {msg.message}
+                      {msg.timestamp && (
+                        <span style={{ marginLeft: "8px", fontSize: "0.9em", color: "#888" }}>
+                          ({msg.timestamp})
+                        </span>
+                      )}
                     </div>
                   )}
                 </div>
