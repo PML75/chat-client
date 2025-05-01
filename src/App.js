@@ -72,7 +72,7 @@ export default function ChatApp() {
     if (confirmLogout) {
       if (ws) ws.close();
       localStorage.removeItem("loggedInUserId");
-      window.location.href = "index.html";
+      window.location.href = "https://main.d3d5a526enwg5q.amplifyapp.com/";
     }
   };
   return (
