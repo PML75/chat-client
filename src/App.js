@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from "react"; 
+import React, { useState, useEffect, useRef } from "react";
 import "bootstrap/dist/css/bootstrap.min.css";
 import EmojiPicker from "emoji-picker-react";
 
@@ -93,6 +93,42 @@ export default function ChatApp() {
     }
   };
 
+  const exportChat = (format = "txt") => {
+    if (messages.length === 0) {
+      alert("No chat messages to export.");
+      return;
+    }
+
+    let content = "";
+
+    if (format === "json") {
+      content = JSON.stringify(messages, null, 2);
+    } else {
+      content = messages
+        .map((msg) => {
+          if (msg.systemMessage)
+            return `[System] ${msg.systemMessage} (${msg.timestamp})`;
+          if (msg.publicMessage)
+            return `[Public] ${msg.publicMessage} (${msg.timestamp})`;
+          if (msg.from && msg.message)
+            return `${msg.from}: ${msg.message} (${msg.timestamp})`;
+          return JSON.stringify(msg);
+        })
+        .join("\n");
+    }
+
+    const blob = new Blob([content], {
+      type: format === "json" ? "application/json" : "text/plain",
+    });
+
+    const link = document.createElement("a");
+    link.href = URL.createObjectURL(blob);
+    link.download = `chat-log.${format}`;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  };
+
   return (
     <div className="d-flex vh-100">
       <div className="bg-dark text-white p-3" style={{ width: "250px" }}>
@@ -136,6 +172,18 @@ export default function ChatApp() {
             <div className="d-flex justify-content-between align-items-center mb-3">
               <h5 className="mb-0">Chat Room</h5>
               <div>
+                <button
+                  className="btn btn-outline-secondary me-2"
+                  onClick={() => exportChat("txt")}
+                >
+                  📄 Export TXT
+                </button>
+                <button
+                  className="btn btn-outline-secondary me-2"
+                  onClick={() => exportChat("json")}
+                >
+                  🧾 Export JSON
+                </button>
                 <button
                   className="btn btn-secondary me-2"
                   onClick={handleLogout}
@@ -210,7 +258,7 @@ export default function ChatApp() {
                       )}
                       {msg.publicMessage && (
                         <>
-                          <strong>{msg.publicMessage.split(":")[0]}</strong>: {" "}
+                          <strong>{msg.publicMessage.split(":")[0]}</strong>:{" "}
                           {msg.publicMessage
                             .split(":")
                             .slice(1)
@@ -252,7 +300,10 @@ export default function ChatApp() {
               <div ref={messagesEndRef} />
             </div>
 
-            <div className="d-flex gap-2 mb-2 align-items-center" style={{ position: "relative" }}>
+            <div
+              className="d-flex gap-2 mb-2 align-items-center"
+              style={{ position: "relative" }}
+            >
               <input
                 className="form-control"
                 placeholder="Type a message..."
@@ -269,7 +320,9 @@ export default function ChatApp() {
                 Public
               </button>
               {showEmojiPicker && (
-                <div style={{ position: "absolute", bottom: "60px", zIndex: 1000 }}>
+                <div
+                  style={{ position: "absolute", bottom: "60px", zIndex: 1000 }}
+                >
                   <EmojiPicker
                     onEmojiClick={(emojiData) => {
                       setInput((prev) => prev + emojiData.emoji);
