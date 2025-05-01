@@ -1,5 +1,6 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect, useRef } from "react"; 
 import "bootstrap/dist/css/bootstrap.min.css";
+import EmojiPicker from "emoji-picker-react";
 
 const SOCKET_URL =
   "wss://xubzgv3dv1.execute-api.us-east-1.amazonaws.com/production/";
@@ -13,6 +14,7 @@ export default function ChatApp() {
   const [privateTo, setPrivateTo] = useState("");
   const [members, setMembers] = useState([]);
   const [lastSentTime, setLastSentTime] = useState(0);
+  const [showEmojiPicker, setShowEmojiPicker] = useState(false);
 
   const messagesEndRef = useRef();
 
@@ -208,7 +210,7 @@ export default function ChatApp() {
                       )}
                       {msg.publicMessage && (
                         <>
-                          <strong>{msg.publicMessage.split(":")[0]}</strong>:{" "}
+                          <strong>{msg.publicMessage.split(":")[0]}</strong>: {" "}
                           {msg.publicMessage
                             .split(":")
                             .slice(1)
@@ -250,16 +252,31 @@ export default function ChatApp() {
               <div ref={messagesEndRef} />
             </div>
 
-            <div className="d-flex gap-2 mb-2">
+            <div className="d-flex gap-2 mb-2 align-items-center" style={{ position: "relative" }}>
               <input
                 className="form-control"
                 placeholder="Type a message..."
                 value={input}
                 onChange={(e) => setInput(e.target.value)}
               />
+              <button
+                className="btn btn-outline-secondary"
+                onClick={() => setShowEmojiPicker(!showEmojiPicker)}
+              >
+                😊
+              </button>
               <button className="btn btn-success" onClick={sendPublic}>
                 Public
               </button>
+              {showEmojiPicker && (
+                <div style={{ position: "absolute", bottom: "60px", zIndex: 1000 }}>
+                  <EmojiPicker
+                    onEmojiClick={(emojiData) => {
+                      setInput((prev) => prev + emojiData.emoji);
+                    }}
+                  />
+                </div>
+              )}
             </div>
 
             <div className="d-flex gap-2">
