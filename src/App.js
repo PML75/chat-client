@@ -12,7 +12,7 @@ export default function ChatApp() {
   const [input, setInput] = useState("");
   const [privateTo, setPrivateTo] = useState("");
   const [members, setMembers] = useState([]);
-  const [lastSentTime, setLastSentTime] = useState(0); // 👈 Added for rate limiting
+  const [lastSentTime, setLastSentTime] = useState(0);
 
   const messagesEndRef = useRef();
 
@@ -140,11 +140,7 @@ export default function ChatApp() {
             >
               {messages.map((msg, i) => (
                 <div key={i} className="mb-2">
-                  {Object.entries(msg).map(([key, val]) => (
-                    <div key={key}>
-                      <strong>{key}</strong>: {val}
-                    </div>
-                  ))}
+                  <strong>{msg.from || "System"}</strong>: {msg.message || JSON.stringify(msg)}
                 </div>
               ))}
               <div ref={messagesEndRef} />
