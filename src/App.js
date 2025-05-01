@@ -140,7 +140,22 @@ export default function ChatApp() {
             >
               {messages.map((msg, i) => (
                 <div key={i} className="mb-2">
-                  <strong>{msg.from || "System"}</strong>: {msg.message || JSON.stringify(msg)}
+                  {msg.systemMessage && (
+                    <div style={{ fontStyle: "italic", color: "#888" }}>
+                      {msg.systemMessage}
+                    </div>
+                  )}
+                  {msg.publicMessage && (
+                    <div>
+                      <strong>{msg.publicMessage.split(":")[0]}</strong>:{" "}
+                      {msg.publicMessage.split(":").slice(1).join(":").trim()}
+                    </div>
+                  )}
+                  {msg.from && msg.message && (
+                    <div>
+                      <strong>{msg.from}</strong>: {msg.message}
+                    </div>
+                  )}
                 </div>
               ))}
               <div ref={messagesEndRef} />
