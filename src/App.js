@@ -12,6 +12,7 @@ export default function ChatApp() {
   const [input, setInput] = useState("");
   const [privateTo, setPrivateTo] = useState("");
   const [members, setMembers] = useState([]);
+  const [lastSentTime, setLastSentTime] = useState(0); // 👈 Added for rate limiting
 
   const messagesEndRef = useRef();
 
@@ -52,9 +53,16 @@ export default function ChatApp() {
   };
 
   const sendPublic = () => {
-    if (input) {
+    const now = Date.now();
+    if (now - lastSentTime < 1000) {
+      alert("You're sending messages too quickly. Please wait a second.");
+      return;
+    }
+
+    if (input && ws) {
       ws.send(JSON.stringify({ action: "sendPublic", message: input }));
       setInput("");
+      setLastSentTime(now);
     }
   };
 
@@ -75,6 +83,7 @@ export default function ChatApp() {
       window.location.href = "https://main.d3d5a526enwg5q.amplifyapp.com/";
     }
   };
+
   return (
     <div className="d-flex vh-100">
       <div className="bg-dark text-white p-3" style={{ width: "250px" }}>
@@ -183,4 +192,3 @@ export default function ChatApp() {
     </div>
   );
 }
-  
