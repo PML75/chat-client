@@ -94,7 +94,10 @@ export default function ChatApp() {
   return (
     <div className="d-flex vh-100">
       <div className="bg-dark text-white p-3" style={{ width: "250px" }}>
-        <h5 className="mb-4">Members</h5>
+        <h5 className="mb-2">Members</h5>
+        <div style={{ fontSize: "0.9rem", color: "#ccc", marginBottom: "1rem" }}>
+          🟢 Users Online: {members.length}
+        </div>
         {members.map((member, i) => (
           <div
             key={i}
@@ -162,7 +165,13 @@ export default function ChatApp() {
                       <strong>{msg.publicMessage.split(":")[0]}</strong>:{" "}
                       {msg.publicMessage.split(":").slice(1).join(":").trim()}
                       {msg.timestamp && (
-                        <span style={{ marginLeft: "8px", fontSize: "0.9em", color: "#888" }}>
+                        <span
+                          style={{
+                            marginLeft: "8px",
+                            fontSize: "0.9em",
+                            color: "#888",
+                          }}
+                        >
                           ({msg.timestamp})
                         </span>
                       )}
@@ -172,7 +181,13 @@ export default function ChatApp() {
                     <div>
                       <strong>{msg.from}</strong>: {msg.message}
                       {msg.timestamp && (
-                        <span style={{ marginLeft: "8px", fontSize: "0.9em", color: "#888" }}>
+                        <span
+                          style={{
+                            marginLeft: "8px",
+                            fontSize: "0.9em",
+                            color: "#888",
+                          }}
+                        >
                           ({msg.timestamp})
                         </span>
                       )}
