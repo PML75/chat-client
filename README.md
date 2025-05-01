@@ -5,7 +5,7 @@ This is a simple real-time chat client built as a **practice project for Cloud C
 The frontend is built with **React** and **Node.js**, and the backend is entirely serverless using **AWS Lambda** and **API Gateway WebSocket API**.
 
 ---
-s
+
 ## Features
 
 - Real-time messaging with WebSockets  
