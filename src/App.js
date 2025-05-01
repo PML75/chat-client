@@ -1,21 +1,22 @@
-import React, { useState, useEffect, useRef } from 'react';
-import 'bootstrap/dist/css/bootstrap.min.css';
+import React, { useState, useEffect, useRef } from "react";
+import "bootstrap/dist/css/bootstrap.min.css";
 
-const SOCKET_URL = 'wss://xubzgv3dv1.execute-api.us-east-1.amazonaws.com/production/'
+const SOCKET_URL =
+  "wss://xubzgv3dv1.execute-api.us-east-1.amazonaws.com/production/";
 
 export default function ChatApp() {
   const [ws, setWs] = useState(null);
   const [messages, setMessages] = useState([]);
-  const [name, setName] = useState('');
+  const [name, setName] = useState("");
   const [connected, setConnected] = useState(false);
-  const [input, setInput] = useState('');
-  const [privateTo, setPrivateTo] = useState('');
+  const [input, setInput] = useState("");
+  const [privateTo, setPrivateTo] = useState("");
   const [members, setMembers] = useState([]);
 
   const messagesEndRef = useRef();
 
   useEffect(() => {
-    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages]);
 
   useEffect(() => {
@@ -25,7 +26,7 @@ export default function ChatApp() {
         if (data.members) {
           setMembers(data.members);
         } else {
-          setMessages(prev => [...prev, data]);
+          setMessages((prev) => [...prev, data]);
         }
       };
     }
@@ -36,7 +37,7 @@ export default function ChatApp() {
     socket.onopen = () => {
       setWs(socket);
       setConnected(true);
-      socket.send(JSON.stringify({ action: 'setName', name }));
+      socket.send(JSON.stringify({ action: "setName", name }));
     };
     socket.onclose = () => {
       setConnected(false);
@@ -52,24 +53,39 @@ export default function ChatApp() {
 
   const sendPublic = () => {
     if (input) {
-      ws.send(JSON.stringify({ action: 'sendPublic', message: input }));
-      setInput('');
+      ws.send(JSON.stringify({ action: "sendPublic", message: input }));
+      setInput("");
     }
   };
 
   const sendPrivate = () => {
     if (input && privateTo) {
-      ws.send(JSON.stringify({ action: 'sendPrivate', message: input, to: privateTo }));
-      setInput('');
+      ws.send(
+        JSON.stringify({ action: "sendPrivate", message: input, to: privateTo })
+      );
+      setInput("");
     }
   };
 
+  const handleLogout = () => {
+    const confirmLogout = window.confirm("Are you sure you want to log out?");
+    if (confirmLogout) {
+      if (ws) ws.close();
+      localStorage.removeItem("loggedInUserId");
+      window.location.href = "index.html";
+    }
+  };
   return (
     <div className="d-flex vh-100">
-      <div className="bg-dark text-white p-3" style={{ width: '250px' }}>
+      <div className="bg-dark text-white p-3" style={{ width: "250px" }}>
         <h5 className="mb-4">Members</h5>
         {members.map((member, i) => (
-          <div key={i} className="mb-2" onClick={() => setPrivateTo(member)} style={{ cursor: 'pointer' }}>
+          <div
+            key={i}
+            className="mb-2"
+            onClick={() => setPrivateTo(member)}
+            style={{ cursor: "pointer" }}
+          >
             {member}
           </div>
         ))}
@@ -84,7 +100,11 @@ export default function ChatApp() {
               value={name}
               onChange={(e) => setName(e.target.value)}
             />
-            <button className="btn btn-primary" onClick={connect} disabled={!name}>
+            <button
+              className="btn btn-primary"
+              onClick={connect}
+              disabled={!name}
+            >
               Connect
             </button>
           </div>
@@ -92,14 +112,29 @@ export default function ChatApp() {
           <>
             <div className="d-flex justify-content-between align-items-center mb-3">
               <h5 className="mb-0">Chat Room</h5>
-              <button className="btn btn-danger" onClick={disconnect}>Disconnect</button>
+              <div>
+                <button
+                  className="btn btn-secondary me-2"
+                  onClick={handleLogout}
+                >
+                  Logout
+                </button>
+                <button className="btn btn-danger" onClick={disconnect}>
+                  Disconnect
+                </button>
+              </div>
             </div>
 
-            <div className="border rounded p-3 mb-3" style={{ height: '70%', overflowY: 'auto' }}>
+            <div
+              className="border rounded p-3 mb-3"
+              style={{ height: "70%", overflowY: "auto" }}
+            >
               {messages.map((msg, i) => (
                 <div key={i} className="mb-2">
                   {Object.entries(msg).map(([key, val]) => (
-                    <div key={key}><strong>{key}</strong>: {val}</div>
+                    <div key={key}>
+                      <strong>{key}</strong>: {val}
+                    </div>
                   ))}
                 </div>
               ))}
@@ -126,13 +161,19 @@ export default function ChatApp() {
               >
                 <option value="">Select user</option>
                 {members
-                  .filter(member => member !== name)
+                  .filter((member) => member !== name)
                   .map((member, i) => (
-                    <option key={i} value={member}>{member}</option>
+                    <option key={i} value={member}>
+                      {member}
+                    </option>
                   ))}
               </select>
 
-              <button className="btn btn-info" onClick={sendPrivate} disabled={!privateTo}>
+              <button
+                className="btn btn-info"
+                onClick={sendPrivate}
+                disabled={!privateTo}
+              >
                 Send Private
               </button>
             </div>
@@ -142,3 +183,4 @@ export default function ChatApp() {
     </div>
   );
 }
+  
