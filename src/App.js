@@ -91,44 +91,13 @@ export default function ChatApp() {
     }
   };
 
-  const exportChat = (format = "txt") => {
-    if (messages.length === 0) {
-      alert("No chat messages to export.");
-      return;
-    }
-
-    let content = "";
-
-    if (format === "json") {
-      content = JSON.stringify(messages, null, 2);
-    } else {
-      content = messages
-        .map((msg) => {
-          if (msg.systemMessage) return `[System] ${msg.systemMessage} (${msg.timestamp})`;
-          if (msg.publicMessage) return `[Public] ${msg.publicMessage} (${msg.timestamp})`;
-          if (msg.from && msg.message) return `${msg.from}: ${msg.message} (${msg.timestamp})`;
-          return JSON.stringify(msg);
-        })
-        .join("\n");
-    }
-
-    const blob = new Blob([content], {
-      type: format === "json" ? "application/json" : "text/plain",
-    });
-
-    const link = document.createElement("a");
-    link.href = URL.createObjectURL(blob);
-    link.download = `chat-log.${format}`;
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
-  };
-
   return (
     <div className="d-flex vh-100">
       <div className="bg-dark text-white p-3" style={{ width: "250px" }}>
         <h5 className="mb-2">Members</h5>
-        <div style={{ fontSize: "0.9rem", color: "#ccc", marginBottom: "1rem" }}>
+        <div
+          style={{ fontSize: "0.9rem", color: "#ccc", marginBottom: "1rem" }}
+        >
           🟢 Users Online: {members.length}
         </div>
         {members.map((member, i) => (
@@ -166,18 +135,6 @@ export default function ChatApp() {
               <h5 className="mb-0">Chat Room</h5>
               <div>
                 <button
-                  className="btn btn-outline-secondary me-2"
-                  onClick={() => exportChat("txt")}
-                >
-                  📄 Export as TXT
-                </button>
-                <button
-                  className="btn btn-outline-secondary me-2"
-                  onClick={() => exportChat("json")}
-                >
-                  🧾 Export as JSON
-                </button>
-                <button
                   className="btn btn-secondary me-2"
                   onClick={handleLogout}
                 >
@@ -191,55 +148,105 @@ export default function ChatApp() {
 
             <div
               className="border rounded p-3 mb-3"
-              style={{ height: "70%", overflowY: "auto" }}
+              style={{
+                height: "70%",
+                overflowY: "auto",
+                display: "flex",
+                flexDirection: "column",
+                alignItems: "flex-start",
+              }}
             >
-              {messages.map((msg, i) => (
-                <div key={i} className="mb-2">
-                  {msg.systemMessage && (
-                    <div style={{ fontStyle: "italic", color: "#888" }}>
-                      {msg.systemMessage}
-                      {msg.timestamp && (
-                        <span style={{ marginLeft: "8px", fontSize: "0.9em" }}>
-                          ({msg.timestamp})
-                        </span>
+              {messages.map((msg, i) => {
+                const isOwn =
+                  msg.from === name ||
+                  (msg.publicMessage &&
+                    msg.publicMessage.startsWith(`${name}:`));
+                return (
+                  <div
+                    key={i}
+                    style={{
+                      display: "flex",
+                      justifyContent: msg.systemMessage
+                        ? "center"
+                        : isOwn
+                        ? "flex-end"
+                        : "flex-start",
+                      width: "100%",
+                      marginBottom: "0.5rem",
+                    }}
+                  >
+                    <div
+                      style={{
+                        backgroundColor: msg.systemMessage
+                          ? "transparent"
+                          : isOwn
+                          ? "#007bff"
+                          : "#e4e6eb",
+                        color: isOwn ? "white" : "black",
+                        padding: "8px 12px",
+                        borderRadius: "15px",
+                        maxWidth: "75%",
+                        fontStyle: msg.systemMessage ? "italic" : "normal",
+                        wordBreak: "break-word",
+                      }}
+                    >
+                      {msg.systemMessage && (
+                        <>
+                          {msg.systemMessage}
+                          {msg.timestamp && (
+                            <span
+                              style={{
+                                marginLeft: "8px",
+                                fontSize: "0.8em",
+                                color: "#999",
+                              }}
+                            >
+                              ({msg.timestamp})
+                            </span>
+                          )}
+                        </>
+                      )}
+                      {msg.publicMessage && (
+                        <>
+                          <strong>{msg.publicMessage.split(":")[0]}</strong>:{" "}
+                          {msg.publicMessage
+                            .split(":")
+                            .slice(1)
+                            .join(":")
+                            .trim()}
+                          {msg.timestamp && (
+                            <span
+                              style={{
+                                marginLeft: "8px",
+                                fontSize: "0.8em",
+                                color: "#ccc",
+                              }}
+                            >
+                              ({msg.timestamp})
+                            </span>
+                          )}
+                        </>
+                      )}
+                      {msg.from && msg.message && (
+                        <>
+                          <strong>{msg.from}</strong>: {msg.message}
+                          {msg.timestamp && (
+                            <span
+                              style={{
+                                marginLeft: "8px",
+                                fontSize: "0.8em",
+                                color: "#ccc",
+                              }}
+                            >
+                              ({msg.timestamp})
+                            </span>
+                          )}
+                        </>
                       )}
                     </div>
-                  )}
-                  {msg.publicMessage && (
-                    <div>
-                      <strong>{msg.publicMessage.split(":")[0]}</strong>:{" "}
-                      {msg.publicMessage.split(":").slice(1).join(":").trim()}
-                      {msg.timestamp && (
-                        <span
-                          style={{
-                            marginLeft: "8px",
-                            fontSize: "0.9em",
-                            color: "#888",
-                          }}
-                        >
-                          ({msg.timestamp})
-                        </span>
-                      )}
-                    </div>
-                  )}
-                  {msg.from && msg.message && (
-                    <div>
-                      <strong>{msg.from}</strong>: {msg.message}
-                      {msg.timestamp && (
-                        <span
-                          style={{
-                            marginLeft: "8px",
-                            fontSize: "0.9em",
-                            color: "#888",
-                          }}
-                        >
-                          ({msg.timestamp})
-                        </span>
-                      )}
-                    </div>
-                  )}
-                </div>
-              ))}
+                  </div>
+                );
+              })}
               <div ref={messagesEndRef} />
             </div>
 
