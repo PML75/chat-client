@@ -45,10 +45,12 @@ npm start
 ```
 
 ### 📂 Project Structure
+```bash
 /public
 /src
   ├── ChatApp.js          # Main chat component
   ├── index.js            # Entry point
   ├── firebaseauth.js     # Optional Firebase auth
   └── style.css           # Custom styles
+```
 
