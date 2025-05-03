@@ -34,14 +34,15 @@ The frontend is developed using **React**, while the backend leverages **AWS Lam
 ```bash
 git clone https://github.com/your-username/chat-client.git
 cd chat-client
-
+```
 ### 2. Install dependencies
 ```bash
 npm install
-
+```
 ### 3. Start the development server
 ```bash
 npm start
+```
 
 ### 📂 Project Structure
 /public
