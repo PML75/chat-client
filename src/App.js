@@ -348,7 +348,6 @@ export default function ChatApp() {
                   ))}
               </select>
 
-              <button className="btn btn-info" onClick={sendPrivate} disabled={!privateTo}>
               <button
                 className="btn btn-info"
                 onClick={sendPrivate}
